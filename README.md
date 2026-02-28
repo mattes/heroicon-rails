@@ -15,7 +15,7 @@ If you're using React or VueJS for your application or want to use heroicons in 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem "heroicon-rails"
+gem "heroicon-rails", github: "mattes/heroicon-rails"
 ```
 
 And then execute:
@@ -73,8 +73,8 @@ You can display an icon using the heroicon helper in your views. For example:
 heroicon "name", type: :outline, class: "additional-classes"
 ```
 - `name`: The name of the Heroicon you wish to use (e.g., arrow-down, users).
-- `type`: `"solid"`, `"outline"`, or `"mini"`. (defaults to `:solid`).
-- `class`: Additional CSS classes you want to add (defaults to `"h-6 w-6"` for `solid` and `outline`, and `"h-5 w-5"` for `mini`) to set the default size using Tailwind CSS classes.
+- `type`: `"solid"`, `"outline"`, `"mini"`, or `"micro"`. (defaults to `:solid`).
+- `class`: Additional CSS classes you want to add (defaults to `"w-6 h-6"` for `solid` and `outline`, `"w-5 h-5"` for `mini`, and `"w-4 h-4"` for `micro`) to set the default size using Tailwind CSS classes.
 
 ## Contributing
 Contributions are welcome, especially in the following areas:
