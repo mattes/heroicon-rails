@@ -1,4 +1,8 @@
+# frozen_string_literal: true
+
 require "active_support/core_ext/string/output_safety"
+require "active_support/core_ext/string/inflections"
+require "securerandom"
 
 module HeroiconHelper
   HEROICONS_PATH = File.expand_path("assets/heroicons", __dir__)
@@ -22,13 +26,8 @@ module HeroiconHelper
     # Handle title attribute
     title_attribute = options.delete(:title)
 
-    # Handle data- attributes, filtering out anything that doesn"t start with "data-"
-    data_attributes = options.select { |key, _| key.to_s.start_with?("data-") }
-    options.except!(*data_attributes.keys)
-
     # Load the SVG icon
-    gem_root = Gem::Specification.find_by_name("heroicon-rails").gem_dir
-    icon_path = File.join(gem_root, "lib", "heroicon", "rails", "assets", "heroicons", type, "#{name}.svg")
+    icon_path = File.join(HEROICONS_PATH, type, "#{name}.svg")
     icon_content = File.read(icon_path)
     icon_doc = Nokogiri::HTML::DocumentFragment.parse(icon_content)
     svg = icon_doc.at_css("svg")
@@ -45,20 +44,21 @@ module HeroiconHelper
     svg[:style] = style_attribute if style_attribute
 
     # Enhance accessibility
+    unique_id = "#{name}-icon-#{SecureRandom.hex(4)}"
     svg[:role] = "img"
-    svg["aria-labelledby"] = "#{name}-icon"
+    svg["aria-labelledby"] = unique_id
     title_element = Nokogiri::XML::Node.new("title", icon_doc)
     title_element.content = title_attribute || name.humanize
-    title_element[:id] = "#{name}-icon"
+    title_element[:id] = unique_id
     svg.prepend_child(title_element)
 
-    # Add custom data- attributes
-    data_attributes.each do |key, value|
-      svg[key] = value
+    # Apply remaining options as HTML attributes
+    options.each do |key, value|
+      svg[key.to_s] = value
     end
 
     icon_doc.to_html.html_safe
-  rescue StandardError => e
-    "Icon #{name} not found. Error: #{e.message}"
+  rescue Errno::ENOENT
+    "Icon #{name} not found"
   end
 end
