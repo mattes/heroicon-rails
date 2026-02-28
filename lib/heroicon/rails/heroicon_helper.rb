@@ -58,7 +58,5 @@ module HeroiconHelper
     end
 
     icon_doc.to_html.html_safe
-  rescue Errno::ENOENT
-    "Icon #{name} not found"
   end
 end

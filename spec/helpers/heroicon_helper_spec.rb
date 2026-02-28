@@ -11,8 +11,8 @@ RSpec.describe HeroiconHelper, type: :helper do
       expect(html).to include("class=\"w-6 h-6\"")
     end
 
-    it "returns an error string for an invalid icon" do
-      expect(heroicon("invalid-icon")).to eq("Icon invalid-icon not found")
+    it "raises for an invalid icon" do
+      expect { heroicon("invalid-icon") }.to raise_error(Errno::ENOENT)
     end
 
     it "applies custom classes" do

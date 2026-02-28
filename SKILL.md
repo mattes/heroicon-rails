@@ -103,14 +103,11 @@ Any keyword argument is passed through as an HTML attribute on the `<svg>`:
 
 ## Error handling
 
-If the icon name doesn't exist, the helper returns `"Icon {name} not found"` as a plain string instead of raising an exception.
+If the icon name doesn't exist, the helper raises `Errno::ENOENT`.
 
 ## Accessibility
 
-Icons are rendered as plain `<svg>` elements by default (no title, no role). To make an icon accessible:
-- Use `title:` to add a `<title>` element and `role="img"` (e.g. for standalone meaningful icons)
-- Use `"aria-hidden": "true"` for decorative icons next to visible text
-- Use `aria-label` on the parent element for icon-only buttons
+Icons are rendered as plain `<svg>` elements by default (no title, no role). Use `"aria-hidden": "true"` for decorative icons next to visible text, and `aria-label` on the parent element for icon-only buttons.
 
 ## Available icons (324 names)
 
