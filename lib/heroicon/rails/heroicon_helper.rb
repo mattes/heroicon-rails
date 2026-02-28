@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require "active_support/core_ext/string/output_safety"
-require "active_support/core_ext/string/inflections"
-require "securerandom"
-
 module HeroiconHelper
   HEROICONS_PATH = File.expand_path("assets/heroicons", __dir__)
 
@@ -48,14 +44,13 @@ module HeroiconHelper
     # Apply style attribute if present
     svg[:style] = style_attribute if style_attribute
 
-    # Enhance accessibility
-    unique_id = "#{name}-icon-#{SecureRandom.hex(4)}"
-    svg[:role] = "img"
-    svg["aria-labelledby"] = unique_id
-    title_element = Nokogiri::XML::Node.new("title", icon_doc)
-    title_element.content = title_attribute || name.humanize
-    title_element[:id] = unique_id
-    svg.prepend_child(title_element)
+    # Add title element only when explicitly provided
+    if title_attribute
+      svg[:role] = "img"
+      title_element = Nokogiri::XML::Node.new("title", icon_doc)
+      title_element.content = title_attribute
+      svg.prepend_child(title_element)
+    end
 
     # Apply remaining options as HTML attributes
     options.each do |key, value|

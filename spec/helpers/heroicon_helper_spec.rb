@@ -34,14 +34,10 @@ RSpec.describe HeroiconHelper, type: :helper do
       expect(html).to include("class=\"w-4 h-4\"")
     end
 
-    it "generates unique IDs for aria-labelledby" do
-      html1 = heroicon("bolt")
-      html2 = heroicon("bolt")
-      doc1 = Nokogiri::HTML::DocumentFragment.parse(html1)
-      doc2 = Nokogiri::HTML::DocumentFragment.parse(html2)
-      id1 = doc1.at_css("title")["id"]
-      id2 = doc2.at_css("title")["id"]
-      expect(id1).not_to eq(id2)
+    it "does not add a title element by default" do
+      html = heroicon("bolt")
+      doc = Nokogiri::HTML::DocumentFragment.parse(html)
+      expect(doc.at_css("title")).to be_nil
     end
 
     it "passes through data- attributes" do
@@ -54,10 +50,11 @@ RSpec.describe HeroiconHelper, type: :helper do
       expect(html).to include('aria-hidden="true"')
     end
 
-    it "allows overriding the title" do
+    it "adds title and role=img when title is provided" do
       html = heroicon("bolt", title: "Lightning")
       doc = Nokogiri::HTML::DocumentFragment.parse(html)
       expect(doc.at_css("title").text).to eq("Lightning")
+      expect(doc.at_css("svg")["role"]).to eq("img")
     end
 
     it "accepts symbols for name and type" do

@@ -39,13 +39,13 @@ Returns an HTML-safe SVG string. Both strings and symbols work for `name` and `t
 
 Providing `w-*` or `h-*` classes overrides the default size for that dimension.
 
-### Custom title for accessibility
+### Title for accessibility
 
 ```erb
 <%= heroicon "arrow-left", title: "Go back" %>
 ```
 
-Without `title:`, the icon gets a `<title>` element with the humanized name (e.g. "arrow-left" becomes "Arrow left").
+When `title:` is provided, a `<title>` element and `role="img"` are added to the SVG. Without `title:`, no title element is added (no tooltip on hover).
 
 ### Data and aria attributes
 
@@ -107,7 +107,10 @@ If the icon name doesn't exist, the helper returns `"Icon {name} not found"` as 
 
 ## Accessibility
 
-Every icon automatically gets `role="img"`, an `aria-labelledby` attribute, and a `<title>` element. For decorative icons next to visible text, add `"aria-hidden": "true"` and ensure the surrounding element has its own label.
+Icons are rendered as plain `<svg>` elements by default (no title, no role). To make an icon accessible:
+- Use `title:` to add a `<title>` element and `role="img"` (e.g. for standalone meaningful icons)
+- Use `"aria-hidden": "true"` for decorative icons next to visible text
+- Use `aria-label` on the parent element for icon-only buttons
 
 ## Available icons (324 names)
 
