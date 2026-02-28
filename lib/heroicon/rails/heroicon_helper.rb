@@ -1,62 +1,69 @@
 # frozen_string_literal: true
 
-module HeroiconHelper
+module HeroiconHelper # :nodoc:
   HEROICONS_PATH = File.expand_path("assets/heroicons", __dir__)
+  VALID_TYPES = %w[solid outline mini micro].freeze
+  VALID_NAME_PATTERN = /\A[a-z0-9-]+\z/
 
-  # Returns an SVG icon from the Heroicons library with customizable dimensions.
-  # @param name [String] the name of the icon
-  # @param type [String] the style of the icon (default: "solid")
-  # @param options [Hash] additional options including custom CSS classes
-  # @return [String] HTML safe string with the SVG content or error message
+  # Returns an SVG icon from the Heroicons library.
+  # @param name [String, Symbol] the name of the icon
+  # @param type [String, Symbol] the style of the icon (default: "solid")
+  # @return [String] HTML-safe SVG string
   def heroicon(name, type: "solid", **options)
-    # Allow strings or symbols for name and type arguments
     name = name.to_s
     type = type.to_s
+    validate_arguments!(name, type)
+    svg, doc = load_svg(type, name)
+    apply_classes(svg, type, options.delete(:class) || "")
+    apply_style(svg, options.delete(:style))
+    apply_title(svg, doc, options.delete(:title))
+    apply_html_attributes(svg, options)
+    doc.to_html.html_safe
+  end
 
-    # Handle class attribute
-    custom_class = options.delete(:class) || ""
+  private
 
-    # Handle style attribute
-    style_attribute = options.delete(:style)
+  def validate_arguments!(name, type)
+    raise ArgumentError, "Invalid icon type: #{type.inspect}" unless VALID_TYPES.include?(type)
+    raise ArgumentError, "Invalid icon name: #{name.inspect}" unless VALID_NAME_PATTERN.match?(name)
+  end
 
-    # Handle title attribute
-    title_attribute = options.delete(:title)
-
-    # Load the SVG icon
+  def load_svg(type, name)
     icon_path = File.join(HEROICONS_PATH, type, "#{name}.svg")
-    icon_content = File.read(icon_path)
-    icon_doc = Nokogiri::HTML::DocumentFragment.parse(icon_content)
-    svg = icon_doc.at_css("svg")
+    doc = Nokogiri::HTML::DocumentFragment.parse(File.read(icon_path))
+    [doc.at_css("svg"), doc]
+  end
 
-    # Apply custom css classes
-    custom_width_class = custom_class[/\bw-\d+/]
-    custom_height_class = custom_class[/\bh-\d+/]
-    default_size = case type
-                   when "micro" then %w[w-4 h-4]
-                   when "mini" then %w[w-5 h-5]
-                   else %w[w-6 h-6]
-                   end
-    default_width = custom_width_class ? "" : default_size[0]
-    default_height = custom_height_class ? "" : default_size[1]
-    css_classes = "#{default_width} #{default_height} #{custom_class}".strip
+  def apply_classes(svg, type, custom_class)
+    default_w, default_h = default_size(type)
+    width = custom_class[/\bw-\d+/] ? "" : default_w
+    height = custom_class[/\bh-\d+/] ? "" : default_h
+    css_classes = [width, height, custom_class].reject(&:empty?).join(" ")
     svg[:class] = css_classes unless css_classes.empty?
+  end
 
-    # Apply style attribute if present
-    svg[:style] = style_attribute if style_attribute
-
-    # Add title element only when explicitly provided
-    if title_attribute
-      svg[:role] = "img"
-      title_element = Nokogiri::XML::Node.new("title", icon_doc)
-      title_element.content = title_attribute
-      svg.prepend_child(title_element)
+  def default_size(type)
+    case type
+    when "micro" then %w[w-4 h-4]
+    when "mini" then %w[w-5 h-5]
+    else %w[w-6 h-6]
     end
+  end
 
-    # Apply remaining options as HTML attributes
-    options.each do |key, value|
-      svg[key.to_s] = value
-    end
+  def apply_style(svg, style)
+    svg[:style] = style if style
+  end
 
-    icon_doc.to_html.html_safe
+  def apply_title(svg, doc, title)
+    return unless title
+
+    svg[:role] = "img"
+    title_element = Nokogiri::XML::Node.new("title", doc)
+    title_element.content = title
+    svg.prepend_child(title_element)
+  end
+
+  def apply_html_attributes(svg, options)
+    options.each { |key, value| svg[key.to_s] = value }
   end
 end

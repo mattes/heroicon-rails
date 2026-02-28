@@ -14,7 +14,7 @@ lib/heroicon/rails/assets/heroicons/   # SVG icon files
   outline/  (324 icons, 24x24)
   mini/     (324 icons, 20x20)
   micro/    (316 icons, 16x16)
-spec/helpers/heroicon_helper_spec.rb   # Helper tests (11 examples)
+spec/helpers/heroicon_helper_spec.rb   # Helper tests (19 examples)
 spec/heroicon/rails_spec.rb            # Version test
 ```
 
@@ -38,9 +38,9 @@ bundle exec rake          # Run both (default task)
 ## How it works
 
 1. `Railtie` includes `HeroiconHelper` into `ActionView::Base` on Rails boot
-2. `heroicon(name, type:, **options)` reads SVG from `assets/heroicons/{type}/{name}.svg`
-3. Nokogiri parses the SVG and injects: CSS classes, accessibility attrs (`role="img"`, `<title>`, `aria-labelledby`), and any user-provided HTML attributes
-4. Returns `html_safe` string; returns `"Icon {name} not found"` on `Errno::ENOENT`
+2. `heroicon(name, type:, **options)` validates inputs, then reads SVG from `assets/heroicons/{type}/{name}.svg`
+3. Nokogiri parses the SVG and injects: CSS classes, optional `<title>` + `role="img"`, and any user-provided HTML attributes
+4. Returns `html_safe` string; raises `ArgumentError` for invalid name/type, `Errno::ENOENT` for missing icon files
 
 ## Syncing icons from upstream
 
@@ -57,6 +57,6 @@ Clone heroicons, diff file lists, copy new SVGs. No build step — raw SVGs used
 
 ## Key gotchas
 
-- `active_support/core_ext/string/inflections` must stay required — provides `String#humanize` for default title text
-- `rescue Errno::ENOENT` is intentionally narrow — only catches missing icon files
+- `name` and `type` are validated before file access to prevent path traversal (`VALID_TYPES`, `VALID_NAME_PATTERN`)
+- No `<title>` is added by default — only when `title:` is explicitly passed (avoids unwanted browser tooltips)
 - The micro type has 8 fewer icons than the others (no arrow-small-*, minus-small, plus-small, arrow-*-on-rectangle)

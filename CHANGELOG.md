@@ -1,5 +1,15 @@
 ## [Unreleased]
 
+## [0.3.1]
+- Fix path traversal vulnerability by validating icon name and type inputs
+- Refactor heroicon helper into smaller private methods
+- Fix double-space bug in CSS class string when overriding width or height
+- Fix gemspec URLs to point to mattes/heroicon-rails fork
+- Add rubygems_mfa_required to gemspec
+- Fix all RuboCop offenses (frozen_string_literal, NewCops, line length)
+- Remove unused Heroicon::Rails::Error class
+- Expand test coverage from 11 to 19 examples
+
 ## [0.3.0]
 - Sync all icons with official Heroicons repository
 - Add 29 missing icons to solid, outline, and mini types

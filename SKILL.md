@@ -103,7 +103,8 @@ Any keyword argument is passed through as an HTML attribute on the `<svg>`:
 
 ## Error handling
 
-If the icon name doesn't exist, the helper raises `Errno::ENOENT`.
+- Invalid `type` or `name` raises `ArgumentError`.
+- A valid name that doesn't match an icon file raises `Errno::ENOENT`.
 
 ## Accessibility
 
