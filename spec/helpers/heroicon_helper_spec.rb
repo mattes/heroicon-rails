@@ -28,6 +28,12 @@ RSpec.describe HeroiconHelper, type: :helper do
       expect(html).to include("class=\"w-5 h-5\"")
     end
 
+    it "handles micro type" do
+      icon_name = "bolt"
+      html = heroicon(icon_name, type: "micro")
+      expect(html).to include("class=\"w-4 h-4\"")
+    end
+
     it "generates unique IDs for aria-labelledby" do
       html1 = heroicon("bolt")
       html2 = heroicon("bolt")

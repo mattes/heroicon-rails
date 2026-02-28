@@ -35,8 +35,13 @@ module HeroiconHelper
     # Apply custom css classes
     custom_width_class = custom_class[/\bw-\d+/]
     custom_height_class = custom_class[/\bh-\d+/]
-    default_width = custom_width_class ? "" : (type == "mini" ? "w-5" : "w-6")
-    default_height = custom_height_class ? "" : (type == "mini" ? "h-5" : "h-6")
+    default_size = case type
+                   when "micro" then %w[w-4 h-4]
+                   when "mini" then %w[w-5 h-5]
+                   else %w[w-6 h-6]
+                   end
+    default_width = custom_width_class ? "" : default_size[0]
+    default_height = custom_height_class ? "" : default_size[1]
     css_classes = "#{default_width} #{default_height} #{custom_class}".strip
     svg[:class] = css_classes unless css_classes.empty?
 

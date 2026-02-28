@@ -1,5 +1,10 @@
 ## [Unreleased]
 
+## [0.3.0]
+- Sync all icons with official Heroicons repository
+- Add 29 missing icons to solid, outline, and mini types
+- Add new "micro" type (16x16) with 316 icons and w-4/h-4 defaults
+
 ## [0.2.9]
 - Bump gem version
 
